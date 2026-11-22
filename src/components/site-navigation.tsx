@@ -16,7 +16,7 @@ export default function SiteNavigation() {
   const pathname = usePathname();
 
   return (
-    <header className="mx-auto mt-5 w-[calc(100%-2.5rem)] max-w-7xl max-[30rem]:mt-3 max-[30rem]:w-[calc(100%-1.5rem)]">
+    <header className="mt-5 max-[30rem]:mt-3">
       <Card>
         <nav
           className="flex flex-wrap items-center justify-start gap-x-8 gap-y-3 px-6 pt-2 pb-3 max-[30rem]:px-4"

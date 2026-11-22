@@ -28,8 +28,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           className="pointer-events-none fixed inset-0 -z-10 bg-white/30 dark:bg-[#0c121a]/40"
           aria-hidden="true"
         />
-        <SiteNavigation />
-        {children}
+        <div className="mx-auto w-[calc(100%-2.5rem)] min-w-0 max-w-7xl max-[30rem]:w-[calc(100%-1.5rem)]">
+          <SiteNavigation />
+          {children}
+        </div>
       </body>
     </html>
   );
