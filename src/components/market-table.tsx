@@ -16,6 +16,9 @@ const columns: DataTableColumn<MarketItem>[] = [
   {
     id: "name",
     header: "Name",
+    sortValue: (item) => item.name,
+    filterValue: (item) => item.name,
+    filterLabel: "Search item names",
     cell: (item) => (
       <span className="flex items-center gap-3">
         <span className="flex size-8 shrink-0 items-center justify-center">
@@ -39,12 +42,14 @@ const columns: DataTableColumn<MarketItem>[] = [
   {
     id: "usual",
     header: "Price",
+    sortValue: (item) => Number(item.usual),
     align: "right",
     cell: (item) => typeof item.usual === "number" ? priceFormat.format(item.usual) : item.usual,
   },
   {
     id: "24h",
     header: "24h",
+    sortValue: get24HourChangePercent,
     align: "right",
     cell: (item) => {
       const change = get24HourChangePercent(item);
@@ -62,6 +67,7 @@ const columns: DataTableColumn<MarketItem>[] = [
   {
     id: "7d",
     header: "Trend (7d)",
+    sortValue: (item) => getSevenDayTrend(item).change,
     align: "right",
     cell: (item) => {
       const { prices, change } = getSevenDayTrend(item);
@@ -86,12 +92,14 @@ const columns: DataTableColumn<MarketItem>[] = [
   {
     id: "listings",
     header: "Listings (7d)",
+    sortValue: (item) => item.listings == null ? null : Number(item.listings),
     align: "right",
     cell: (item) => item.listings ?? "—",
   },
   {
     id: "sales",
     header: "Sales (7d)",
+    sortValue: (item) => item.sales == null ? null : Number(item.sales),
     align: "right",
     cell: (item) =>  item.sales ?? "—",
   },
@@ -129,7 +137,7 @@ export default function MarketTable() {
 
   return (
     <DataTable
-      className="h-[50rem] max-h-[80svh] [&_table]:min-w-[72rem] [&_tbody]:font-bold"
+      className="h-[50rem] max-h-[80svh] [&_table]:min-w-[84rem] [&_tbody]:font-bold"
       label="Market prices"
       columns={columns}
       data={state.status === "success" ? state.items : []}

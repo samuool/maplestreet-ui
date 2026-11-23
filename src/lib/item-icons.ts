@@ -29,11 +29,12 @@ async function loadIcon(gameId: string, directory: string, filename: string): Pr
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
 
-  const response = await fetch(`https://maplestory.io/api/MCW/CBT2/item/${gameId}/icon`, {
-    cache: "no-store",
+  const response = await fetch(`https://maplestory.io/api/MCW/1/item/${gameId}/icon`, {
     signal: AbortSignal.timeout(10000),
   });
-  if (!response.ok) throw new Error("Item icon request failed.");
+  if (!response.ok) {
+    throw new Error("Unable to retireve item icon")
+  }
 
   const icon = Buffer.from(await response.arrayBuffer());
   if (!icon.subarray(0, pngSignature.length).equals(pngSignature)) {
