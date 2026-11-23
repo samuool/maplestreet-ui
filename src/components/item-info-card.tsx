@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import ItemGraphCard from "@/components/item-graph-card";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table";
 import { get24HourChangePercent, getSevenDayTrend, type MarketItem } from "@/lib/market-items";
@@ -63,7 +64,7 @@ export default function ItemInfoCard({ item, onBack }: ItemInfoCardProps) {
       <div className="flex flex-col">
           <h2 className="text-left text-2xl font-bold wrap-anywhere sm:text-3xl">{item.name}</h2>
           {item.game_id !== undefined && (
-            <div className="my-8 flex justify-center">
+            <div className="mt-8 flex justify-center">
               <Image
                 key={item.game_id}
                 src={`/api/items/${item.game_id}/icon`}
@@ -76,6 +77,7 @@ export default function ItemInfoCard({ item, onBack }: ItemInfoCardProps) {
               />
             </div>
           )}
+          <Button className="mt-3 self-center">Trade</Button>
           <Table aria-label="Item details" className="mt-8">
             <TableBody>
               {details.map(([label, value, color = ""]) => (
