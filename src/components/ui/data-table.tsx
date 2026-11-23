@@ -30,6 +30,7 @@ type DataTableProps<TData> = {
   loading?: boolean;
   error?: string;
   onRetry?: () => void;
+  onRowClick?: (row: TData) => void;
 };
 
 export function DataTable<TData>({
@@ -40,6 +41,7 @@ export function DataTable<TData>({
   loading = false,
   error,
   onRetry,
+  onRowClick,
 }: DataTableProps<TData>) {
   const [sort, setSort] = useState<{ column: string; direction: "ascending" | "descending" } | null>(null);
   const [filters, setFilters] = useState<Record<string, string>>({});
@@ -150,14 +152,26 @@ export function DataTable<TData>({
             </TableRow>
           ) : (
             rows.map(({ row, index }) => (
-              <TableRow key={index} role="row" className="grid auto-cols-fr grid-flow-col">
-                {columns.map((column) => (
+              <TableRow
+                key={index}
+                role="row"
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                className={`grid auto-cols-fr grid-flow-col ${onRowClick ? "relative cursor-pointer" : ""}`}
+              >
+                {columns.map((column, columnIndex) => (
                   <TableCell
                     key={column.id}
                     role="cell"
                     className={`min-w-0 wrap-anywhere ${column.align === "right" ? "text-right tabular-nums" : "text-left"}`}
                   >
-                    {column.cell(row)}
+                    {onRowClick && columnIndex === 0 ? (
+                      <button
+                        type="button"
+                        className="cursor-pointer text-left after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-tertiary"
+                      >
+                        {column.cell(row)}
+                      </button>
+                    ) : column.cell(row)}
                   </TableCell>
                 ))}
               </TableRow>

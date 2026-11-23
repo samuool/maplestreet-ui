@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import ItemInfoCard from "@/components/item-info-card";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { Sparkline } from "@/components/ui/sparkline";
 import { get24HourChangePercent, getSevenDayTrend, parseMarketItems, type MarketItem } from "@/lib/market-items";
@@ -113,6 +114,8 @@ type MarketState =
 export default function MarketTable() {
   const [state, setState] = useState<MarketState>({ status: "loading" });
   const [attempt, setAttempt] = useState(0);
+  const [selectedItem, setSelectedItem] = useState<MarketItem | null>(null);
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -136,17 +139,32 @@ export default function MarketTable() {
   }, [attempt]);
 
   return (
-    <DataTable
-      className="h-[50rem] max-h-[80svh] [&_table]:min-w-[84rem] [&_tbody]:font-bold"
-      label="Market prices"
-      columns={columns}
-      data={state.status === "success" ? state.items : []}
-      loading={state.status === "loading"}
-      error={state.status === "error" ? "Unable to load market prices. Please try again." : undefined}
-      onRetry={() => {
-        setState({ status: "loading" });
-        setAttempt((value) => value + 1);
-      }}
-    />
+    <div className="h-230 w-full min-w-0">
+      {selectedItem && (
+        <div className="h-full max-h-full min-h-0 w-full min-w-0 max-w-full">
+        <ItemInfoCard item={selectedItem} onBack={() => {
+          setSelectedItem(null);
+          requestAnimationFrame(() => returnFocus.current?.focus());
+        }} /></div>
+      )}
+      <div hidden={selectedItem !== null} className="h-full min-h-0 min-w-0">
+        <DataTable
+          className="h-full max-h-full min-h-0 w-full min-w-0 max-w-full [&_tbody]:font-bold"
+          label="Market prices"
+          columns={columns}
+          data={state.status === "success" ? state.items : []}
+          onRowClick={(item) => {
+            returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+            setSelectedItem(item);
+          }}
+          loading={state.status === "loading"}
+          error={state.status === "error" ? "Unable to load market prices. Please try again." : undefined}
+          onRetry={() => {
+            setState({ status: "loading" });
+            setAttempt((value) => value + 1);
+          }}
+        />
+      </div>
+    </div>
   );
 }

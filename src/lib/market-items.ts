@@ -1,10 +1,13 @@
 export type MarketItem = {
+  id?: number | string;
   name: string;
   game_id?: number | string;
   usual: number | string;
   listings?: number | string;
   sales?: number | string;
   history?: { usual: number | string | null }[];
+  low_7d: number | string;
+  high_7d: number | string;
 };
 
 export function parseMarketItems(value: unknown): MarketItem[] {
@@ -15,19 +18,33 @@ export function parseMarketItems(value: unknown): MarketItem[] {
       throw new Error("Invalid item.");
     }
 
-    const { name, usual, history, game_id } = item as Record<string, unknown>;
+    const { id, name, usual, history, game_id, low_7d, high_7d } = item as Record<string, unknown>;
     if (
       typeof name !== "string" ||
       !name.trim() ||
       !(
         (typeof usual === "number" && Number.isFinite(usual)) ||
         (typeof usual === "string" && usual.trim())
+      ) || 
+      !(
+        (typeof low_7d === "number" && Number.isFinite(low_7d)) ||
+        (typeof low_7d === "string" && low_7d.trim())
+      ) ||
+      !(
+        (typeof high_7d === "number" && Number.isFinite(high_7d)) ||
+        (typeof high_7d === "string" && high_7d.trim())
       )
     ) {
       throw new Error("Invalid item fields.");
     }
 
-    const parsedItem: MarketItem = { name, usual };
+    const parsedItem: MarketItem = { name, usual, low_7d, high_7d };
+    if (
+      (typeof id === "number" && Number.isFinite(id)) ||
+      (typeof id === "string" && id.trim())
+    ) {
+      parsedItem.id = id;
+    }
     for (const field of ["listings", "sales"] as const) {
       const count = (item as Record<string, unknown>)[field];
       if (
