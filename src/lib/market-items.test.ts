@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { get24HourChangePercent, parseMarketItems, type MarketItem } from "./market-items";
+import { get24HourChangePercent, getSevenDayTrend, parseMarketItems, type MarketItem } from "./market-items";
 
 function itemWithHistory(current: number | string, previous: number | string): MarketItem {
   return {
@@ -42,5 +42,40 @@ describe("24-hour price change", () => {
     expect(item.history?.[28]).toEqual({ usual: 100 });
     expect(get24HourChangePercent(item)).toBe(25);
     expect(item).not.toHaveProperty("private");
+  });
+});
+
+describe("seven-day trend", () => {
+  function trend(prices: (number | string | null)[]) {
+    return getSevenDayTrend({ name: "Test", usual: 999, history: prices.map((usual) => ({ usual })) });
+  }
+
+  it("uses only the final seven entries with the most recent price last", () => {
+    expect(trend([900, 800, "100", 110, 105, 120, 115, 130, "125"])).toEqual({
+      prices: [100, 110, 105, 120, 115, 130, 125],
+      change: 25,
+    });
+  });
+
+  it.each([
+    { prices: [100, 90, 80, 90, 85, 80, 75], expected: -25 },
+    { prices: [100, 100, 100, 100, 100, 100, 100], expected: 0 },
+    { prices: [100, 90, 80, 70, 60, 50, 0], expected: -100 },
+  ])("calculates a signed change of $expected", ({ prices, expected }) => {
+    expect(trend(prices).change).toBe(expected);
+  });
+
+  it("keeps missing or invalid days as gaps without shifting the time window", () => {
+    expect(trend([100, null, "unknown", -1, "", 110, 125])).toEqual({
+      prices: [100, null, null, null, null, 110, 125],
+      change: 25,
+    });
+  });
+
+  it("leaves unavailable changes undefined for short history or unusable endpoints", () => {
+    expect(getSevenDayTrend({ name: "Test", usual: 100 })).toEqual({ prices: [], change: null });
+    expect(trend([100, 125]).change).toBeNull();
+    expect(trend([0, 100, 100, 100, 100, 100, 125]).change).toBeNull();
+    expect(trend([100, 100, 100, 100, 100, 100, null]).change).toBeNull();
   });
 });

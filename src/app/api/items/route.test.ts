@@ -11,8 +11,8 @@ describe("GET /api/items", () => {
     vi.stubEnv("MAPLESTREET_ITEMS_API", "localhost:4321/items?key=private");
     const history = Array.from({ length: 29 }, () => ({ usual: 1000, internal: "private" }));
     const fetchMock = vi.fn().mockResolvedValue(Response.json([
-      { name: "Maple shield", usual: 1200, history, internal: "private" },
-      { name: "Potion", usual: 0 },
+      { name: "Maple shield", usual: 1200, game_id: "1092000", history, internal: "private" },
+      { name: "Potion", usual: 0, listings: 0, sales: "1500" },
     ]));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -25,8 +25,8 @@ describe("GET /api/items", () => {
     );
     expect(response.headers.get("Cache-Control")).toBe("no-store");
     expect(await response.json()).toEqual([
-      { name: "Maple shield", usual: 1200, history: history.map(({ usual }) => ({ usual })) },
-      { name: "Potion", usual: 0 },
+      { name: "Maple shield", usual: 1200, game_id: "1092000", history: history.map(({ usual }) => ({ usual })) },
+      { name: "Potion", usual: 0, listings: 0, sales: "1500" },
     ]);
   });
 
