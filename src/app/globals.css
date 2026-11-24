@@ -9,4 +9,11 @@
   --color-tertiary: #ba992d;
   --radius-card: 2rem;
   --shadow-acrylic: 0 12px 32px rgb(0 0 0 / 20%);
+  --animate-input-shake: input-shake 300ms ease-in-out;
+
+  @keyframes input-shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+  }
 }

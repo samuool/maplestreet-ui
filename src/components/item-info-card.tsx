@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import ItemGraphCard from "@/components/item-graph-card";
-import { Button } from "@/components/ui/button";
+import ItemTradeInput from "@/components/item-trade-input";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table";
 import { get24HourChangePercent, getSevenDayTrend, type MarketItem } from "@/lib/market-items";
@@ -77,7 +77,6 @@ export default function ItemInfoCard({ item, onBack }: ItemInfoCardProps) {
               />
             </div>
           )}
-          <Button className="mt-3 self-center">Trade</Button>
           <Table aria-label="Item details" className="mt-8">
             <TableBody>
               {details.map(([label, value, color = ""]) => (
@@ -88,6 +87,7 @@ export default function ItemInfoCard({ item, onBack }: ItemInfoCardProps) {
               ))}
             </TableBody>
           </Table>
+          <ItemTradeInput key={item.id ?? item.game_id ?? item.name} />
       </div>
       </div>
       <div className="grow">
